@@ -12,7 +12,7 @@ class UserBase(BaseModel):
     bank_details: Optional[dict] = None
 
 class UserCreate(UserBase):
-    pass
+    pass # apparently empty cuz reuses everything from UserBase.
 
 class UserResponse(UserBase):
     id: uuid.UUID
