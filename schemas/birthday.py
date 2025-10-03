@@ -31,7 +31,6 @@ class BirthdayResponseSchema(BirthdayBaseSchema):
 
 # Extended schema with relationships
 class BirthdayWithRelations(BirthdayResponseSchema):
-    """Extended schema with relationships - use specific models instead of dict"""
     user: Optional["UserResponseSchema"] = None
     organizer: Optional["OrganizerResponseSchema"] = None
     contributions: list["ContributionResponseSchema"] = []
