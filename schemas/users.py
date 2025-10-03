@@ -16,8 +16,8 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: uuid.UUID
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         orm_mode = True
