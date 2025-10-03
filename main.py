@@ -1,77 +1,25 @@
-import datetime, uuid
-from fastapi import FastAPI, Depends
-from pydantic import BaseModel
-from typing import List, Annotated, Optional
-import models
-from database import engine, SessionLocal
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from core.config import settings
 
-app = FastAPI()
-models.Base.metadata.create_all(bind=engine)
+app = FastAPI(
+    title="Symphony Birthday Planner",
+    description="Internal symphony.is application for managing birthdays",
+    version='0.1.0',
+    docs_url='/docs',
+    redoc_url='/redoc',
+)
 
-# ----------------------
-# SCHEMAS
-# ----------------------
+# Basically an allowance to make calls to the backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_headers=['*'],
+)
 
-# Base schema (shared fields, but no id/timestamps)
-class UserBase(BaseModel):
-    email: str
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    role: Optional[str] = "user"
-    bank_details: Optional[dict] = None
-
-
-# Request schema (what client sends when creating a user)
-class UserCreate(UserBase):
-    pass
-
-
-# Response schema (what API returns, includes id + timestamps)
-class UserResponse(UserBase):
-    id: uuid.UUID
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
-
-    class Config:
-        orm_mode = True  # allows SQLAlchemy model → Pydantic
-
-
-# ----------------------
-# DB DEPENDENCY
-# ----------------------
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-db_dependency = Annotated[Session, Depends(get_db)]
-
-
-# ----------------------
-# ROUTES
-# ----------------------
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
-
-
-@app.post("/users/", response_model=UserResponse)
-def create_user(user: UserCreate, db: db_dependency):
-    db_user = models.User(**user.dict())
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
-
-
-@app.get("/users/", response_model=List[UserResponse])
-def get_users(db: db_dependency):
-    return db.query(models.User).all()
+# This allows to serve the fastAPI application, uvicorn is a web-server
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
