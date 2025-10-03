@@ -2,7 +2,7 @@ from sqlalchemy import Column, DateTime, ForeignKey, Numeric, UniqueConstraint, 
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-from backend.db.database import Base
+from db.database import Base
 import uuid
 
 class Organizer(Base):
