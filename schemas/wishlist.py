@@ -28,7 +28,7 @@ class WishlistResponseSchema(WishlistBaseSchema):
     class Config:
         from_attributes = True
 
-# Extended schema with relationships"""
+# Extended schema with relationships
 class WishlistWithRelationsSchema(WishlistResponseSchema):
     user: Optional["UserResponseSchema"] = None
 

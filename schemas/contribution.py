@@ -7,7 +7,7 @@ from decimal import Decimal
 if TYPE_CHECKING:
     from backend.schemas.birthday import BirthdayResponseSchema
     from backend.schemas.users import UserResponseSchema
-    #from .organizer_schema import OrganizerResponse
+    from backend.schemas.organizer import OrganizerResponseSchema
 
 class ContributionBaseSchema(BaseModel):
     amount: Annotated[
@@ -40,7 +40,7 @@ class ContributionResponseSchema(ContributionBaseSchema):
 class ContributionWithRelationsSchema(ContributionResponseSchema):
     birthday: Optional["BirthdayResponseSchema"] = None
     contributor: Optional["UserResponseSchema"] = None
-    organizer: Optional["OrganizerResponse"] = None
+    organizer: Optional["OrganizerResponseSchema"] = None
 
     class Config:
         from_attributes = True

@@ -1,7 +1,13 @@
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import date, datetime
-from typing import Optional, Literal
+from typing import Optional, Literal, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from backend.schemas.users import UserResponseSchema
+    from backend.schemas.organizer import OrganizerResponseSchema
+    from backend.schemas.contribution import ContributionResponseSchema
+    from backend.schemas.notification import NotificationResponseSchema
 
 class BirthdayBaseSchema(BaseModel):
     date: date
@@ -23,12 +29,13 @@ class BirthdayResponseSchema(BirthdayBaseSchema):
     class Config:
         from_attributes = True  # Enables ORM mode for SQLAlchemy compatibility
 
-# Extended schema with relationships (optional, use when needed)
-class BirthdayWithRelationsSchema(BirthdayResponseSchema):
-    user: Optional[dict] = None
-    organizer: Optional[dict] = None
-    contributions: Optional[list[dict]] = None
-    notifications: Optional[list[dict]] = None
+# Extended schema with relationships
+class BirthdayWithRelations(BirthdayResponseSchema):
+    """Extended schema with relationships - use specific models instead of dict"""
+    user: Optional["UserResponseSchema"] = None
+    organizer: Optional["OrganizerResponseSchema"] = None
+    contributions: list["ContributionResponseSchema"] = []
+    notifications: list["NotificationResponseSchema"] = []
 
     class Config:
         from_attributes = True

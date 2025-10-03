@@ -35,8 +35,8 @@ class NotificationResponseSchema(NotificationBaseSchema):
     class Config:
         from_attributes = True
 
+# Extended schema with relationships
 class NotificationWithRelationsSchema(NotificationResponseSchema):
-    """Extended schema with relationships"""
     user: Optional["UserResponseSchema"] = None
     birthday: Optional["BirthdayResponseSchema"] = None
 
