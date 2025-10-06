@@ -14,14 +14,12 @@ class User(Base):
     last_name = Column(String, nullable=False)
     nickname = Column(String, nullable=True)
     birthday = Column(DateTime, nullable=True)
-    role = Column(String, default="user") # Future improvement: admin
+    role = Column(String, default="user") # keeping an option for admin role
     bank_details = Column(JSONB, nullable=True)  # encrypted at rest
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
 
     # Relationships
-    wishlists = relationship("Wishlist", back_populates="user", cascade="all, delete-orphan")
+    gifts = relationship("Gift", back_populates="user", cascade="all, delete-orphan")
     birthdays = relationship("Birthday", back_populates="user", cascade="all, delete-orphan")
     contributions = relationship("Contribution", back_populates="contributor", cascade="all, delete-orphan")
-    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
-    organizer_roles = relationship("Organizer", back_populates="organizer", cascade="all, delete-orphan")
