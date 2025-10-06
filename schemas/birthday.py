@@ -1,40 +1,62 @@
-from pydantic import BaseModel
+from psycopg2._psycopg import Decimal
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, List, TYPE_CHECKING
+from datetime import datetime, date
 from uuid import UUID
-from datetime import date, datetime
-from typing import Optional, Literal, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from backend.schemas.users import UserResponseSchema
-    from backend.schemas.organizer import OrganizerResponseSchema
-    from backend.schemas.contribution import ContributionResponseSchema
-    from backend.schemas.notification import NotificationResponseSchema
+    from backend.schemas.contribution import ContributionWithContributorSchema
+    from backend.schemas.users import UserPublicSchema
 
 class BirthdayBaseSchema(BaseModel):
-    date: date
-    status: Literal["planned", "collecting", "gift_decided", "completed", "cancelled"] = "planned"
+    date_year: date
+    gift_description: str = Field(..., min_length=1, max_length=5000)
+
+    @field_validator('date_year')
+    @classmethod
+    def validate_date_year(cls, value):
+        if value < date.today():
+            raise ValueError('Birthday date cannot be in the past')
+        return value
 
 class BirthdayCreateSchema(BirthdayBaseSchema):
     user_id: UUID
 
-class BirthdayUpdateSchema(BaseModel):
-    date: Optional[date] = None
-    status: Optional[Literal["planned", "collecting", "gift_decided", "completed", "cancelled"]] = None
+class BirthdayUpdate(BaseModel):
+    date_year: Optional[date] = None
+    gift_description: Optional[str] = Field(None, min_length=1, max_length=5000)
+
+    @field_validator('date_year')
+    @classmethod
+    def validate_date_year(cls, value):
+        if value is not None and value < date.today():
+            raise ValueError('Birthday date cannot be in the past')
+        return value
 
 class BirthdayResponseSchema(BirthdayBaseSchema):
     id: UUID
     user_id: UUID
+    organizer_id: UUID
     created_at: datetime
-    updated_at: Optional[datetime] = None
+    updated_at: Optional[datetime]
 
-    class Config:
-        from_attributes = True  # Enables ORM mode for SQLAlchemy compatibility
+    model_config = {
+        "from_attributes": True
+    }
 
-# Extended schema with relationships
-class BirthdayWithRelations(BirthdayResponseSchema):
-    user: Optional["UserResponseSchema"] = None
-    organizer: Optional["OrganizerResponseSchema"] = None
-    contributions: list["ContributionResponseSchema"] = []
-    notifications: list["NotificationResponseSchema"] = []
+class BirthdayWithDetailsSchema(BirthdayResponseSchema):
+    user: "UserPublicSchema"
+    organizer: "UserPublicSchema"
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
+
+class BirthdayWithContributionsSchema(BirthdayWithDetailsSchema):
+    contributions: List["ContributionWithContributorSchema"] = []
+    total_amount: Optional[Decimal] = None
+    total_paid: Optional[Decimal] = None
+
+    model_config = {
+        "from_attributes": True
+    }

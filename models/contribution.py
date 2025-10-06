@@ -11,7 +11,6 @@ class Contribution(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     birthday_id = Column(UUID(as_uuid=True), ForeignKey("birthdays.id", ondelete="CASCADE"), nullable=False)
     contributor_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
-    organizer_id = Column(UUID(as_uuid=True), ForeignKey("organizers.id", ondelete="SET NULL"), nullable=True)
     amount = Column(Numeric(12, 2), nullable=False)
     paid = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -21,4 +20,3 @@ class Contribution(Base):
     # Relationships
     birthday = relationship("Birthday", back_populates="contributions")
     contributor = relationship("User", back_populates="contributions")
-    organizer = relationship("Organizer", back_populates="contributions")

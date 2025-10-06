@@ -10,8 +10,10 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, unique=True, nullable=False)
-    first_name = Column(String, nullable=True)
-    last_name = Column(String, nullable=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    nickname = Column(String, nullable=True)
+    birthday = Column(DateTime, nullable=True)
     role = Column(String, default="user") # Future improvement: admin
     bank_details = Column(JSONB, nullable=True)  # encrypted at rest
     created_at = Column(DateTime(timezone=True), server_default=func.now())

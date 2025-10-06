@@ -1,46 +1,68 @@
-from pydantic import BaseModel, Field
-from uuid import UUID
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, TYPE_CHECKING
 from datetime import datetime
-from typing import Optional, TYPE_CHECKING, Annotated
+from uuid import UUID
 from decimal import Decimal
+
+from backend.schemas.users import UserPublicSchema
 
 if TYPE_CHECKING:
     from backend.schemas.birthday import BirthdayResponseSchema
     from backend.schemas.users import UserResponseSchema
-    from backend.schemas.organizer import OrganizerResponseSchema
 
 class ContributionBaseSchema(BaseModel):
-    amount: Annotated[
-        Decimal,
-        Field(gt=0, max_digits=12, decimal_places=2, description="Contribution amount (must be positive)")
-    ]
-    paid: bool = False
+    amount: Decimal = Field(..., gt=0, max_digits=12, decimal_places=2)
+
+    @field_validator('amount')
+    @classmethod
+    def validate_amount(cls, value):
+        if value <= 0:
+            raise ValueError('Amount must be greater than 0')
+        return value
+
 
 class ContributionCreateSchema(ContributionBaseSchema):
     birthday_id: UUID
-    contributor_id: UUID
-    organizer_id: Optional[UUID] = None
 
 class ContributionUpdateSchema(BaseModel):
-    amount: Optional[Annotated[Decimal, Field(gt=0, max_digits=12, decimal_places=2)]] = None
+    amount: Optional[Decimal] = Field(None, gt=0, max_digits=12, decimal_places=2)
     paid: Optional[bool] = None
-    organizer_id: Optional[UUID] = None
+
+    @field_validator('amount')
+    @classmethod
+    def validate_amount(cls, value):
+        if value is not None and value <= 0:
+            raise ValueError('Amount must be greater than 0')
+        return value
 
 class ContributionResponseSchema(ContributionBaseSchema):
     id: UUID
     birthday_id: UUID
     contributor_id: UUID
-    organizer_id: Optional[UUID] = None
+    paid: bool
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
-# Extended schema with relationships
+class ContributionSummary(BaseModel):
+    total_contributions: int
+    total_amount: Decimal
+    total_paid: Decimal
+    total_unpaid: Decimal
+
 class ContributionWithRelationsSchema(ContributionResponseSchema):
     birthday: Optional["BirthdayResponseSchema"] = None
     contributor: Optional["UserResponseSchema"] = None
-    organizer: Optional["OrganizerResponseSchema"] = None
 
     class Config:
         from_attributes = True
+
+
+class ContributionWithContributorSchema(ContributionResponseSchema):
+    contributor: "UserPublicSchema"
+
+    model_config = {
+        "from_attributes": True
+    }
