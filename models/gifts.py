@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, DateTime, ForeignKey, Date, Text
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
-from backend.db.database import Base
+from db.database import Base
 import uuid
 
 class Gift(Base):

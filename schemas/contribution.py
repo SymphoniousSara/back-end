@@ -7,8 +7,8 @@ from decimal import Decimal
 from backend.schemas.users import UserPublicSchema
 
 if TYPE_CHECKING:
-    from backend.schemas.birthday import BirthdayResponseSchema
-    from backend.schemas.users import UserResponseSchema
+    from schemas.birthday import BirthdayResponseSchema
+    from schemas.users import UserResponseSchema
 
 class ContributionBaseSchema(BaseModel):
     amount: Decimal = Field(..., gt=0, max_digits=12, decimal_places=2)

@@ -5,8 +5,8 @@ from datetime import datetime, date
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from backend.schemas.contribution import ContributionWithContributorSchema
-    from backend.schemas.users import UserPublicSchema
+    from schemas.contribution import ContributionWithContributorSchema
+    from schemas.users import UserPublicSchema
 
 class BirthdayBaseSchema(BaseModel):
     date_year: date

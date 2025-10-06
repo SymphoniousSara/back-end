@@ -4,7 +4,7 @@ from datetime import datetime
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from backend.schemas.users import UserPublicSchema
+    from schemas.users import UserPublicSchema
 
 class GiftBaseSchema(BaseModel):
     name: Optional[str] = Field(None, max_length=255)
