@@ -4,10 +4,10 @@ from datetime import datetime
 from uuid import UUID
 from decimal import Decimal
 
-from backend.schemas.users import UserPublicSchema
+from schemas.users import UserPublicSchema
 
 if TYPE_CHECKING:
-    from schemas.birthday import BirthdayResponseSchema
+    from schemas.birthdays import BirthdayResponseSchema
     from schemas.users import UserResponseSchema
 
 class ContributionBaseSchema(BaseModel):

@@ -15,8 +15,11 @@ class UserBaseSchema(BaseModel):
     @field_validator('birthday')
     @classmethod
     def validate_birthday(cls, value):
-        if value and value > datetime.now():
-            raise ValueError('Birthday cannot be in the future')
+        if value:
+            today = datetime.now().date()
+            age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+            if age < 18:
+                raise ValueError("User must be at least 18 years old to be employed.")
         return value
 
 class UserCreateSchema(UserBaseSchema):
@@ -39,8 +42,11 @@ class UserUpdateSchema(UserBaseSchema):
     @field_validator('birthday')
     @classmethod
     def validate_birthday(cls, value):
-        if value and value > datetime.now():
-            raise ValueError('Birthday cannot be in the future')
+        if value:
+            today = datetime.now().date()
+            age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
+            if age < 18:
+                raise ValueError("User must be at least 18 years old to be employed.")
         return value
 
 class UserResponseSchema(UserBaseSchema):

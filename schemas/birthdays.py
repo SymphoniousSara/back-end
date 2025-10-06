@@ -1,11 +1,11 @@
 from psycopg2._psycopg import Decimal
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, root_validator
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime, date
 from uuid import UUID
 
 if TYPE_CHECKING:
-    from schemas.contribution import ContributionWithContributorSchema
+    from schemas.contributions import ContributionWithContributorSchema
     from schemas.users import UserPublicSchema
 
 class BirthdayBaseSchema(BaseModel):
@@ -21,6 +21,12 @@ class BirthdayBaseSchema(BaseModel):
 
 class BirthdayCreateSchema(BirthdayBaseSchema):
     user_id: UUID
+
+    @field_validator()
+    def check_user_and_organizer_diff(cls, values):
+        if values.get('user_id') == values.get('organizer_id'):
+            raise ValueError('Organizer cannot be the same person as the birthday person')
+        return values
 
 class BirthdayUpdate(BaseModel):
     date_year: Optional[date] = None

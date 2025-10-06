@@ -18,5 +18,5 @@ class Contribution(Base):
     __table_args__ = (UniqueConstraint("birthday_id", "contributor_id", name="uq_contribution_unique"),)
 
     # Relationships
-    birthday = relationship("Birthday", back_populates="contributions")
-    contributor = relationship("User", back_populates="contributions")
+    birthdays = relationship("Birthday", back_populates="contributions")
+    contributions = relationship("User", back_populates="contributions")
