@@ -12,6 +12,8 @@ class UserBaseSchema(BaseModel):
     role: str = Field(default="user")
     bank_details: Optional[dict] = None
 
+    model_config = {"from_attributes": True}
+
     @field_validator('birthday')
     @classmethod
     def validate_birthday(cls, value):
@@ -49,6 +51,7 @@ class UserUpdateSchema(UserBaseSchema):
                 raise ValueError("User must be at least 18 years old to be employed.")
         return value
 
+# Maybe will be decluttered later, not sure if all fields are needed.
 class UserResponseSchema(UserBaseSchema):
     id: UUID
     email: str

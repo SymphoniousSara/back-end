@@ -11,14 +11,14 @@ class GiftBaseSchema(BaseModel):
     description: Optional[str] = Field(None, max_length=255)
     link: Optional[str] = Field(None, max_length=255)
 
+    model_config = {"from_attributes": True}
+
 class GiftCreateSchema(GiftBaseSchema):
     # user_id should be set from authenticated user, not from request body
     pass
 
 class GiftUpdateSchema(BaseModel):
-    name: Optional[str] = Field(None, max_length=255)
-    description: Optional[str] = Field(None, max_length=255)
-    link: Optional[str] = Field(None, max_length=255)
+    pass
 
 class GiftResponseSchema(GiftBaseSchema):
     id: UUID
