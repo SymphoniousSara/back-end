@@ -16,4 +16,5 @@ class Gift(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
 
-    user = relationship("User", back_populates="gifts")
+    #Relationships
+    user = relationship("User", back_populates="gifts", cascade="all, delete-orphan")
