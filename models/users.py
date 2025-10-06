@@ -22,6 +22,6 @@ class User(Base):
 
     # Relationships
     gifts = relationship("Gift", back_populates="users", cascade="all, delete-orphan")
-    birthdays = relationship("Birthday", back_populates="users", cascade="all, delete-orphan", foreign_keys="Birthday.user_id")
+    birthdays = relationship("Birthday", back_populates="user", cascade="all, delete-orphan", foreign_keys="Birthday.user_id")
     organized_birthdays = relationship("Birthday", back_populates="organizer", cascade="all, delete-orphan", foreign_keys="Birthday.organizer_id")
     contributions = relationship("Contribution", back_populates="contributions", cascade="all, delete-orphan")

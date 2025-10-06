@@ -1,5 +1,5 @@
 from psycopg2._psycopg import Decimal
-from pydantic import BaseModel, Field, field_validator, root_validator
+from pydantic import BaseModel, Field, field_validator, root_validator, model_validator
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime, date
 from uuid import UUID
@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 class BirthdayBaseSchema(BaseModel):
     date_year: date
     gift_description: str = Field(..., min_length=1, max_length=5000)
+    total_amount: Optional[Decimal] = None
 
     @field_validator('date_year')
     @classmethod
@@ -21,16 +22,18 @@ class BirthdayBaseSchema(BaseModel):
 
 class BirthdayCreateSchema(BirthdayBaseSchema):
     user_id: UUID
+    organizer_id: Optional[UUID] = None
 
-    @field_validator()
-    def check_user_and_organizer_diff(cls, values):
-        if values.get('user_id') == values.get('organizer_id'):
-            raise ValueError('Organizer cannot be the same person as the birthday person')
-        return values
+    @model_validator(mode="after")
+    def check_user_not_organizer(self):
+        if self.user_id == self.organizer_id:
+            raise ValueError("User cannot organize their own birthday")
+        return self
 
 class BirthdayUpdate(BaseModel):
     date_year: Optional[date] = None
     gift_description: Optional[str] = Field(None, min_length=1, max_length=5000)
+    total_amount: Optional[Decimal] = None
 
     @field_validator('date_year')
     @classmethod
@@ -43,6 +46,7 @@ class BirthdayResponseSchema(BirthdayBaseSchema):
     id: UUID
     user_id: UUID
     organizer_id: UUID
+    bank_details: Optional[dict] = None
     created_at: datetime
     updated_at: Optional[datetime]
 

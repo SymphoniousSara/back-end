@@ -23,21 +23,21 @@ class UserBaseSchema(BaseModel):
         return value
 
 class UserCreateSchema(UserBaseSchema):
-    email: EmailStr
-    first_name: str = Field(..., min_length=1, max_length=100)
-    last_name: str = Field(..., min_length=1, max_length=100)
-    nickname: Optional[str] = Field(None, max_length=50)
+    # the user will be automatically created on first login - first and last name extracted from email
     birthday: Optional[datetime] = None
-    bank_details: Optional[dict] = None
+    # email: EmailStr
+    # first_name: str = Field(..., min_length=1, max_length=100)
+    # last_name: str = Field(..., min_length=1, max_length=100)
+    # nickname: Optional[str] = Field(None, max_length=50)
+    # bank_details: Optional[dict] = None
 
 
 class UserUpdateSchema(UserBaseSchema):
-    email: Optional[EmailStr] = None
-    first_name: Optional[str] = Field(None, min_length=1, max_length=100)
-    last_name: Optional[str] = Field(None, min_length=1, max_length=100)
     nickname: Optional[str] = Field(None, max_length=50)
     birthday: Optional[datetime] = None
     bank_details: Optional[dict] = None
+
+    model_config = {"from_attributes": True}
 
     @field_validator('birthday')
     @classmethod
