@@ -19,4 +19,4 @@ class Contribution(Base):
 
     # Relationships
     birthday = relationship("Birthday", back_populates="contributions")
-    contributor = relationship("User", back_populates="contributions")
+    contributions = relationship("User", back_populates="contributions")

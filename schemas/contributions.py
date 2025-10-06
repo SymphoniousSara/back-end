@@ -4,14 +4,14 @@ from datetime import datetime
 from uuid import UUID
 from decimal import Decimal
 
-from backend.schemas.users import UserPublicSchema
+from schemas.users import UserPublicSchema
 
 if TYPE_CHECKING:
-    from schemas.birthday import BirthdayResponseSchema
+    from schemas.birthdays import BirthdayResponseSchema
     from schemas.users import UserResponseSchema
 
 class ContributionBaseSchema(BaseModel):
-    amount: Decimal = Field(..., gt=0, max_digits=12, decimal_places=2)
+    amount: Optional[Decimal] = Field(..., gt=0, max_digits=12, decimal_places=2)
 
     @field_validator('amount')
     @classmethod
@@ -27,6 +27,8 @@ class ContributionCreateSchema(ContributionBaseSchema):
 class ContributionUpdateSchema(BaseModel):
     amount: Optional[Decimal] = Field(None, gt=0, max_digits=12, decimal_places=2)
     paid: Optional[bool] = None
+
+    model_config = {"from_attributes": True}
 
     @field_validator('amount')
     @classmethod
@@ -56,9 +58,9 @@ class ContributionWithRelationsSchema(ContributionResponseSchema):
     birthday: Optional["BirthdayResponseSchema"] = None
     contributor: Optional["UserResponseSchema"] = None
 
-    class Config:
-        from_attributes = True
-
+    model_config = {
+        "from_attributes": True
+    }
 
 class ContributionWithContributorSchema(ContributionResponseSchema):
     contributor: "UserPublicSchema"

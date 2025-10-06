@@ -15,11 +15,13 @@ class User(Base):
     nickname = Column(String, nullable=True)
     birthday = Column(DateTime, nullable=True)
     role = Column(String, default="user") # keeping an option for admin role
-    bank_details = Column(JSONB, nullable=True)  # encrypted at rest
+    bank_details = Column(JSONB, nullable=True)  # should be encrypted by app or DB extension
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
 
+
     # Relationships
-    gifts = relationship("Gift", back_populates="user", cascade="all, delete-orphan")
-    birthdays = relationship("Birthday", back_populates="user", cascade="all, delete-orphan")
-    contributions = relationship("Contribution", back_populates="contributor", cascade="all, delete-orphan")
+    gifts = relationship("Gift", back_populates="users", cascade="all, delete-orphan")
+    birthdays = relationship("Birthday", back_populates="user", cascade="all, delete-orphan", foreign_keys="Birthday.user_id")
+    organized_birthdays = relationship("Birthday", back_populates="organizer", cascade="all, delete-orphan", foreign_keys="Birthday.organizer_id")
+    contributions = relationship("Contribution", back_populates="contributions", cascade="all, delete-orphan")

@@ -5,8 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="751fc953-8835-4dbb-983d-3b5be1c32197" name="Changes" comment="Setting up base files for models, database and main.py for testing.">
+      <change afterPath="$PROJECT_DIR$/core/auth.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/birthdays.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/users.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/birthdays.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/birthdays.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/contributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/contributions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/gifts.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/gifts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/schemas/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,7 +65,7 @@
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SONARLINT_PRECOMMIT_ANALYSIS": "true",
-    "git-widget-placeholder": "develop",
+    "git-widget-placeholder": "feature/migrations__retouch",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -102,7 +107,7 @@
       <option name="presentableId" value="Default" />
       <updated>1759407086732</updated>
       <workItem from="1759407087779" duration="8092000" />
-      <workItem from="1759737441944" duration="3203000" />
+      <workItem from="1759737441944" duration="13451000" />
     </task>
     <task id="LOCAL-00001" summary="Setting up base files for models, database and main.py for testing.">
       <option name="closed" value="true" />
@@ -133,6 +138,17 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Setting up base files for models, database and main.py for testing." />
