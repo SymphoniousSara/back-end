@@ -4,18 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="786d9bbf-cbd8-4c37-b9de-ddba6fe35eb5" name="Changes" comment="" />
+    <list default="true" id="786d9bbf-cbd8-4c37-b9de-ddba6fe35eb5" name="Changes" comment="Setting up base files for models, database and main.py for testing.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repositories/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/base.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repositories/gift_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/gift_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/repositories/user_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/user_repository.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "git-widget-placeholder": "hotfix/migrations",
+    "git-widget-placeholder": "feature/repository__service__route",
     "node.js.selected.package.tslint": "(autodetect)"
   }
 }]]></component>
