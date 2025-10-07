@@ -1,11 +1,11 @@
-from typing import Generic, TypeVar, Type, Optional, List, Dict, Any
+from typing import Generic, TypeVar, Type, Optional, List
 from uuid import UUID
 from sqlalchemy.orm import Session
 from db.database import Base
 
 ModelType = TypeVar("ModelType", bound=Base)
 
-
+# All the CRUD operations are implemented and the rest of the repositories inherit them only specific methods are added/override.
 class BaseRepository(Generic[ModelType]):
     def __init__(self, model: Type[ModelType], db: Session):
         self.model = model
