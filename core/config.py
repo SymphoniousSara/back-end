@@ -24,13 +24,11 @@ class Settings(BaseSettings):
     # Company Email Domain
     COMPANY_EMAIL_DOMAIN: str = "symphony.is"
 
-    # OAuth (placeholder for future implementation)
-    OAUTH_CLIENT_ID: str = ""
-    OAUTH_CLIENT_SECRET: str = ""
-    OAUTH_REDIRECT_URI: str = ""
-
-    # Mock Auth (for development until OAuth is ready)
-    MOCK_AUTH_ENABLED: bool = True
+    GOOGLE_CLIENT_ID: str = Field(..., env="GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET: str = Field(..., env="GOOGLE_CLIENT_SECRET")
+    REDIRECT_URI: str = Field(..., env="REDIRECT_URI")
+    JWT_SECRET_KEY: str = Field(..., env="JWT_SECRET_KEY")
+    ALGORITHM: str = Field(..., env="ALGORITHM")
 
     # Splitting the 2 values in the .env file and returning a string list
     @field_validator("ALLOWED_ORIGINS")
