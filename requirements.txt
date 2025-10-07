@@ -6,4 +6,5 @@ pydantic
 alembic
 python-dotenv
 pydantic-settings>=2.0.0
+dateutil
 

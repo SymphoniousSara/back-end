@@ -5,8 +5,9 @@ from pydantic import field_validator, Field
 
 class Settings(BaseSettings):
     API_PREFIX: str = "/api"
-    DEBUG: bool = False
+    DEBUG: bool = True
     DATABASE_URL: str = ''
+    PROJECT_NAME: str = "Symphony Birthday Planner"
     ALLOWED_ORIGINS: str = ""
 
     POSTGRES_USER: str = Field(..., env="POSTGRES_USER")
@@ -19,6 +20,9 @@ class Settings(BaseSettings):
     PGADMIN_PASSWORD: str = Field(..., env="PGADMIN_PASSWORD")
 
     DATABASE_URL: str = ""
+
+    # Company Email Domain
+    COMPANY_EMAIL_DOMAIN: str = "symphony.is"
 
     GOOGLE_CLIENT_ID: str = Field(..., env="GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str = Field(..., env="GOOGLE_CLIENT_SECRET")
