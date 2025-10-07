@@ -20,6 +20,12 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = ""
 
+    GOOGLE_CLIENT_ID: str = Field(..., env="GOOGLE_CLIENT_ID")
+    GOOGLE_CLIENT_SECRET: str = Field(..., env="GOOGLE_CLIENT_SECRET")
+    REDIRECT_URI: str = Field(..., env="REDIRECT_URI")
+    JWT_SECRET_KEY: str = Field(..., env="JWT_SECRET_KEY")
+    ALGORITHM: str = Field(..., env="ALGORITHM")
+
     # Splitting the 2 values in the .env file and returning a string list
     @field_validator("ALLOWED_ORIGINS")
     def parse_allowed_origins(cls, v: str) -> List[str]:
