@@ -1,6 +1,8 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from core.config import settings
+from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
+from routers import auth
+from starlette.config import Config
 
 app = FastAPI(
     title="Symphony Birthday Planner",
@@ -10,14 +12,24 @@ app = FastAPI(
     redoc_url='/redoc',
 )
 
-# Basically an allowance to make calls to the backend
+config = Config(".env")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*'],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"]
 )
+
+# Basically an allowance to make calls to the backend
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=config("SECRET_KEY"),
+)
+
+app.include_router(auth.router, prefix='/auth')
 
 # This allows to serve the fastAPI application, uvicorn is a web-server
 if __name__ == '__main__':
