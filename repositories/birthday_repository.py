@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from models.birthdays import Birthday
 from repositories.base import BaseRepository
 
-class UserRepository(BaseRepository[Birthday]):
+class BirthdayRepository(BaseRepository[Birthday]):
     def __init__(self, db: Session):
         super(BaseRepository, self).__init__(Birthday,db)
 

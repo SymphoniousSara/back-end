@@ -30,3 +30,11 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 urllib3==2.5.0
 uvicorn==0.37.0
+passlib[bcrypt]
+python-multipart
+python-dotenv==1.0.0
+authlib
+cartography
+cffi
+alembic
+pydantic_settings
