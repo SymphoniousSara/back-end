@@ -24,7 +24,7 @@ This is the backend for the Birthday App, built with **FastAPI**, **SQLAlchemy**
 
 ```bash
 git clone https://github.com/SymphoniousSara/back-end.git
-cd back-end```
+cd back-end
 
 2. **Create a virtual environment (optional but recommended):**
 ```python -m venv .venv
