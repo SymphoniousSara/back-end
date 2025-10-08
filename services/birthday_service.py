@@ -11,7 +11,7 @@ from models.users import User
 from repositories.birthday_repository import BirthdayRepository
 from repositories.user_repository import UserRepository
 from repositories.contribution_repository import ContributionRepository
-from schemas.birthdays import BirthdayCreateSchema, BirthdayUpdate
+from schemas.birthdays import BirthdayCreateSchema, BirthdayUpdateSchema
 
 
 class BirthdayService:
@@ -105,7 +105,7 @@ class BirthdayService:
             self,
             birthday_id: UUID,
             organizer_id: UUID,
-            update_data: BirthdayUpdate
+            update_data: BirthdayUpdateSchema
     ) -> Birthday:
 
         # Assign organizer and update gift details for a birthday.
@@ -138,7 +138,7 @@ class BirthdayService:
             self,
             birthday_id: UUID,
             current_user_id: UUID,
-            update_data: BirthdayUpdate
+            update_data: BirthdayUpdateSchema
     ) -> Birthday:
 
         # Update birthday details (organizer only).

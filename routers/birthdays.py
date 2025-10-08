@@ -7,7 +7,7 @@ from db.database import get_db
 from core.dependencies import get_current_user_id
 from schemas.birthdays import (
     BirthdayResponseSchema,
-    BirthdayUpdate,
+    BirthdayUpdateSchema,
     BirthdayWithContributionsSchema
 )
 from services.birthday_service import BirthdayService
@@ -57,7 +57,7 @@ def get_birthday_details(
 @router.put("/{birthday_id}", response_model=BirthdayResponseSchema)
 def update_birthday(
         birthday_id: UUID,
-        update_data: BirthdayUpdate,
+        update_data: BirthdayUpdateSchema,
         current_user_id: UUID = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
@@ -78,7 +78,7 @@ def update_birthday(
 @router.post("/{birthday_id}/assign-organizer", response_model=BirthdayResponseSchema)
 def assign_organizer(
         birthday_id: UUID,
-        update_data: BirthdayUpdate,
+        update_data: BirthdayUpdateSchema,
         current_user_id: UUID = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
@@ -115,7 +115,6 @@ def generate_birthday_entries(
         "created_count": len(birthdays),
         "birthdays": birthdays
     }
-
 
 @router.get("/organized/me", response_model=List[BirthdayWithContributionsSchema])
 def get_my_organized_birthdays(
