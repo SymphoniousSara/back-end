@@ -8,27 +8,30 @@ from core.dependencies import get_current_user_id
 from schemas.birthdays import (
     BirthdayResponseSchema,
     BirthdayUpdateSchema,
-    BirthdayWithContributionsSchema
+    BirthdayWithContributionsSchema,
+    BirthdayWithDetailsSchema
 )
 from services.birthday_service import BirthdayService
 
 router = APIRouter(prefix="/birthdays", tags=["Birthdays"])
 
 
-@router.get("", response_model=List[BirthdayWithContributionsSchema])
+@router.get("", response_model=List[BirthdayWithDetailsSchema])
 def list_upcoming_birthdays(
         months_ahead: int = Query(2, ge=1, le=6, description="Months to look ahead"),
         current_user_id: UUID = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
     """
-    List upcoming birthdays in the next 2 months.
+    List upcoming birthdays in the next X months.
 
     Returns birthdays with:
-    - User info (birthday person)
+    - Celebrant info
     - Organizer info
-    - Contributions list
     - Gift details
+    - Basic celebration info
+
+    **Note:** Does not include contributions list for performance
     """
     service = BirthdayService(db)
     birthdays = service.get_upcoming_birthdays(current_user_id, months_ahead)
@@ -45,12 +48,39 @@ def get_birthday_details(
     Get detailed birthday information.
 
     **Visibility depends on role:**
-    - **Non-contributor:** See basic info, gift idea, organizer
-    - **Contributor:** See above + amount they need to pay, payment status
-    - **Organizer:** See everything + can edit details
+    - **Everyone:** See basic info, gift idea, organizer
+    - **Contributor:** See above + their own contribution details
+    - **Organizer:** See everything + all contributions
     """
     service = BirthdayService(db)
     birthday = service.get_birthday_details(birthday_id, current_user_id)
+    return birthday
+
+
+@router.post("/{birthday_id}/organize", response_model=BirthdayResponseSchema)
+def become_organizer(
+        birthday_id: UUID,
+        update_data: BirthdayUpdateSchema,
+        current_user_id: UUID = Depends(get_current_user_id),
+        db: Session = Depends(get_db)
+):
+    """
+    Become organizer for a birthday and set initial details.
+
+    **One-time action:**
+    - Assigns current user as organizer
+    - Sets gift description
+    - Sets total amount
+    - Cannot organize your own birthday
+
+    **Note:** Once organized, cannot be changed to another organizer
+    """
+    service = BirthdayService(db)
+    birthday = service.become_organizer(
+        birthday_id,
+        current_user_id,
+        update_data
+    )
     return birthday
 
 
@@ -64,32 +94,36 @@ def update_birthday(
     """
     Update birthday details.
 
-    **Only organizer can update:**
-    - Assign themselves as organizer
-    - Set gift description
-    - Set total amount
+    **Organizer only:** Can update:
+    - Gift description
+    - Total amount
+    - Celebration date
 
+    **Cannot change:** celebrant, organizer
     """
     service = BirthdayService(db)
     birthday = service.update_birthday(birthday_id, current_user_id, update_data)
     return birthday
 
 
-@router.post("/{birthday_id}/assign-organizer", response_model=BirthdayResponseSchema)
-def assign_organizer(
+@router.post("/{birthday_id}/calculate-split", response_model=BirthdayResponseSchema)  # ✅ ADDED: From contributions
+def calculate_contribution_split(
         birthday_id: UUID,
-        update_data: BirthdayUpdateSchema,
         current_user_id: UUID = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
+    """
+    Calculate equal split of total amount among contributors.
 
-    # Convenience endpoint for becoming organizer in one action.
+    **Organizer only**
+
+    Divides total amount equally among all current contributors
+    and updates their contribution amounts.
+
+    **Example:** 3000 MKD / 3 contributors = 1000 MKD each
+    """
     service = BirthdayService(db)
-    birthday = service.assign_organizer_and_details(
-        birthday_id,
-        current_user_id,
-        update_data
-    )
+    birthday = service.calculate_contribution_amounts(birthday_id, current_user_id)
     return birthday
 
 
@@ -113,16 +147,21 @@ def generate_birthday_entries(
     birthdays = service.create_birthday_entries()
     return {
         "created_count": len(birthdays),
-        "birthdays": birthdays
+        "birthdays": [BirthdayResponseSchema.model_validate(b) for b in birthdays]
     }
+
 
 @router.get("/organized/me", response_model=List[BirthdayWithContributionsSchema])
 def get_my_organized_birthdays(
         current_user_id: UUID = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
+    """
+    Get all birthdays organized by current user.
 
-    # Useful for organizers to see all their responsibilities.
+    Shows full details including all contributions and payment status.
+    Useful for organizers to manage their responsibilities.
+    """
     service = BirthdayService(db)
     birthdays = service.get_birthdays_organized_by_user(current_user_id)
     return birthdays

@@ -6,14 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="786d9bbf-cbd8-4c37-b9de-ddba6fe35eb5" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repositories/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repositories/birthday_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/birthday_repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repositories/contribution_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/contribution_repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repositories/gift_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/gift_repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repositories/user_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/user_repository.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routers/birthdays.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/birthdays.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/contributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/contributions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routers/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/birthday_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/birthday_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/contribution_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/contribution_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/gift_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/gift_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/user_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

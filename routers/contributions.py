@@ -28,7 +28,7 @@ def contribute_to_birthday(
     **Flow:**
     1. User clicks "I want to contribute" on a birthday card
     2. Entry is created in database with birthday_id and contributor_id
-    3. Amount starts at 0, will be calculated later by organizer
+    3. Amount starts as NULL, will be calculated later by organizer
     4. Payment status defaults to False
 
     **Validation:**
@@ -50,7 +50,7 @@ def get_my_contributions(
 
     Shows:
     - Which birthdays user is contributing to
-    - Amount they need to pay for each
+    - Amount they need to pay for each (once calculated by organizer)
     - Payment status
     """
     service = ContributionService(db)
@@ -66,6 +66,8 @@ def get_birthday_contributions(
 ):
     """
     Get all contributors for a specific birthday.
+
+    **Permissions:** Organizer or contributors of this birthday only
 
     Shows list of who is contributing with amounts and payment status.
     """
@@ -85,12 +87,14 @@ def update_contribution(
     Update contribution details.
 
     **Permissions:**
-    - **Organizer:** Can update amount for any contributor
-    - **Contributor:** Can update their own paid status
+    - **Organizer:** Can update payment status for any contributor
+    - **Contributor:** Can update their own paid status only
+
+    **Note:** Amounts are calculated automatically via calculate-split, not manually updated
 
     **Use cases:**
-    - Organizer assigns amounts after gift is finalized
     - Contributor marks as paid after transferring money
+    - Organizer marks contributions as paid when confirmed
     """
     service = ContributionService(db)
     contribution = service.update_contribution(contribution_id, current_user_id, update_data)
@@ -103,33 +107,14 @@ def remove_contribution(
         current_user_id: UUID = Depends(get_current_user_id),
         db: Session = Depends(get_db)
 ):
+    """
+    Remove contribution (withdraw from birthday).
+
+    **Permissions:** Contributor can only remove their own contributions
+    """
     service = ContributionService(db)
     service.remove_contribution(contribution_id, current_user_id)
     return None
-
-
-@router.post("/birthday/{birthday_id}/calculate-split")
-def calculate_equal_split(
-        birthday_id: UUID,
-        current_user_id: UUID = Depends(get_current_user_id),
-        db: Session = Depends(get_db)
-):
-    """
-    Calculate equal split of total amount among contributors.
-
-    **Organizer only**
-
-    Divides the total gift amount equally among all contributors
-    and updates each contribution with their share.
-
-    **Example:**
-    - Total: 3000 MKD
-    - Contributors: 10
-    - Each pays: 300 MKD
-    """
-    service = ContributionService(db)
-    result = service.calculate_equal_split(birthday_id, current_user_id)
-    return result
 
 
 @router.get("/birthday/{birthday_id}/summary")
@@ -142,7 +127,7 @@ def get_contribution_summary(
 
     Returns:
     - Total number of contributors
-    - Total amount committed
+    - Total amount committed (once calculated)
     - Total amount paid
     - Total amount unpaid
     """

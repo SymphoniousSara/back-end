@@ -1,17 +1,16 @@
 from typing import List
 from uuid import UUID
-from datetime import date, datetime
+from datetime import date
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
-from decimal import Decimal
 
 from models.birthdays import Birthday
 from models.users import User
 from repositories.birthday_repository import BirthdayRepository
 from repositories.user_repository import UserRepository
 from repositories.contribution_repository import ContributionRepository
-from schemas.birthdays import BirthdayCreateSchema, BirthdayUpdateSchema
+from schemas.birthdays import BirthdayUpdateSchema
 
 
 class BirthdayService:
@@ -19,55 +18,51 @@ class BirthdayService:
         self.db = db
         self.repository = BirthdayRepository(db)
         self.user_repository = UserRepository(db)
+        self.contribution_repository = ContributionRepository(db)
 
     def create_birthday_entries(self) -> List[Birthday]:
-
-        # Auto-create birthday entries for users with birthdays in next 2 months.
-        # This should be called by a cron job or manually.
-
+        # Auto-create birthday entries for users with birthdays in next 2 months
         today = date.today()
         current_year = today.year
         end_date = today + relativedelta(months=2)
 
-        # Get all users with birthdays
-        users = self.db.query(User).filter(User.birthday.isnot(None)).all()
-
+        users = self.db.query(User).filter(User.birth_date.isnot(None)).all()
         created_birthdays = []
 
         for user in users:
-            if not user.birthday:
+            if not user.birth_date:
                 continue
 
             # Calculate this year's birthday date
             birthday_this_year = date(
                 current_year,
-                user.birthday.month,
-                user.birthday.day
+                user.birth_date.month,
+                user.birth_date.day
             )
 
             # If birthday already passed, check next year
             if birthday_this_year < today:
                 birthday_this_year = date(
                     current_year + 1,
-                    user.birthday.month,
-                    user.birthday.day
+                    user.birth_date.month,
+                    user.birth_date.day
                 )
 
             # Only create if within next 2 months
             if today <= birthday_this_year <= end_date:
                 # Check if entry already exists
-                existing = self.repository.get_by_user_and_year(
+                existing = self.repository.get_by_celebrant_and_year(
                     user.id,
                     birthday_this_year.year
                 )
 
                 if not existing:
                     birthday = self.repository.create(
-                        user_id=user.id,
-                        organizer_id=user.id,  # Placeholder, will be updated
-                        date_year=birthday_this_year,
+                        celebrant_id=user.id,
+                        celebration_date=birthday_this_year,
                         gift_description="",
-                        total_amount=Decimal('0')
+                        total_amount=None,
+                        organizer_id=None
                     )
                     created_birthdays.append(birthday)
 
@@ -77,8 +72,7 @@ class BirthdayService:
             self,
             current_user_id: UUID,
             months_ahead: int = 2
-    ) -> list[type[Birthday]]:
-
+    ) -> List[Birthday]:
         return self.repository.get_upcoming_birthdays(
             months_ahead=months_ahead,
             include_relations=True
@@ -89,41 +83,31 @@ class BirthdayService:
             birthday_id: UUID,
             current_user_id: UUID
     ) -> Birthday:
-
-        # Get birthday details with appropriate visibility based on user role.
-
-        birthday = self.repository.get_all_contributions(birthday_id)
+        birthday = self.repository.get_with_contributions(birthday_id)
         if not birthday:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Birthday not found"
             )
-
         return birthday
 
-    def assign_organizer_and_details(
+    def become_organizer(
             self,
             birthday_id: UUID,
             organizer_id: UUID,
             update_data: BirthdayUpdateSchema
     ) -> Birthday:
-
-        # Assign organizer and update gift details for a birthday.
-        # Only organizer can update these fields.
-
         birthday = self.repository.get_by_id(birthday_id)
         if not birthday:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Birthday not found"
-            )
+            raise HTTPException(404, "Birthday not found")
 
         # Can't organize own birthday
-        if birthday.user_id == organizer_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="You cannot organize your own birthday"
-            )
+        if birthday.celebrant_id == organizer_id:
+            raise HTTPException(400, "You cannot organize your own birthday")
+
+        # Check if already has organizer
+        if birthday.organizer_id is not None:
+            raise HTTPException(400, "Birthday already has an organizer")
 
         # Prepare update data
         update_dict = update_data.model_dump(exclude_unset=True)
@@ -131,7 +115,6 @@ class BirthdayService:
 
         # Update birthday
         updated_birthday = self.repository.update(birthday_id, **update_dict)
-
         return updated_birthday
 
     def update_birthday(
@@ -140,43 +123,73 @@ class BirthdayService:
             current_user_id: UUID,
             update_data: BirthdayUpdateSchema
     ) -> Birthday:
-
-        # Update birthday details (organizer only).
-
         birthday = self.repository.get_by_id(birthday_id)
         if not birthday:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Birthday not found"
-            )
+            raise HTTPException(404, "Birthday not found")
 
         # Only organizer can update
         if birthday.organizer_id != current_user_id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Only the organizer can update birthday details"
-            )
+            raise HTTPException(403, "Only the organizer can update birthday details")
 
         update_dict = update_data.model_dump(exclude_unset=True)
         updated_birthday = self.repository.update(birthday_id, **update_dict)
-
         return updated_birthday
+
+    def calculate_contribution_amounts(
+            self,
+            birthday_id: UUID,
+            current_user_id: UUID
+    ) -> Birthday:
+        birthday = self.repository.get_by_id(birthday_id)
+        if not birthday:
+            raise HTTPException(404, "Birthday not found")
+
+        # Only organizer can calculate
+        if birthday.organizer_id != current_user_id:
+            raise HTTPException(403, "Only organizer can calculate amounts")
+
+        if not birthday.total_amount:
+            raise HTTPException(400, "Total amount must be set first")
+
+        contributions = self.contribution_repository.get_by_birthday_id(birthday_id)
+
+        if not contributions:
+            raise HTTPException(400, "No contributors yet")
+
+        # Calculate equal split (integer division for MKD)
+        total_amount = birthday.total_amount
+        num_contributors = len(contributions)
+        per_person_amount = total_amount // num_contributors
+
+        # Update all contributions with calculated amount
+        for contribution in contributions:
+            self.contribution_repository.update(
+                contribution.id,
+                amount=per_person_amount
+            )
+
+        return birthday
 
     def get_birthdays_organized_by_user(
             self,
             organizer_id: UUID
-    ) -> list[type[Birthday]]:
-
-        # Get all birthdays organized by a specific user.
-
+    ) -> List[Birthday]:
         return self.repository.get_organized_by_user(organizer_id)
+
+    def get_birthdays_for_celebrant(
+            self,
+            celebrant_id: UUID
+    ) -> List[Birthday]:
+        return self.repository.get_birthdays_for_celebrant(celebrant_id)
+
+    def get_birthdays_without_organizer(self) -> List[Birthday]:
+        return self.repository.get_birthdays_without_organizer()
 
     def is_user_organizer(
             self,
             birthday_id: UUID,
             user_id: UUID
     ) -> bool:
-
         birthday = self.repository.get_by_id(birthday_id)
         return birthday and birthday.organizer_id == user_id
 
@@ -185,5 +198,4 @@ class BirthdayService:
             birthday_id: UUID,
             user_id: UUID
     ) -> bool:
-        contrib_repo = ContributionRepository(self.db)
-        return contrib_repo.contribution_exists(birthday_id, user_id)
+        return self.contribution_repository.contribution_exists(birthday_id, user_id)
