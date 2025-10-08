@@ -13,54 +13,26 @@ if TYPE_CHECKING:
 
 
 class ContributionBaseSchema(BaseModel):
-    amount: Optional[Numeric] = Field(..., gt=0, max_digits=12, decimal_places=2)
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    @field_validator("amount")
-    @classmethod
-    def validate_amount(cls, value):
-        if value <= 0:
-            raise ValueError("Amount must be greater than 0")
-        return value
-
+    pass
 
 class ContributionCreateSchema(ContributionBaseSchema):
     birthday_id: UUID
-
+    # contributor_id comes from OAuth
 
 class ContributionUpdateSchema(BaseModel):
-    amount: Optional[Numeric] = Field(None, gt=0, max_digits=12, decimal_places=2)
     paid: Optional[bool] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    @field_validator("amount")
-    @classmethod
-    def validate_amount(cls, value):
-        if value is not None and value <= 0:
-            raise ValueError("Amount must be greater than 0")
-        return value
-
 
 class ContributionResponseSchema(ContributionBaseSchema):
     id: UUID
     birthday_id: UUID
     contributor_id: UUID
+    amount: Optional[int] = None
     paid: bool
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class ContributionSummary(BaseModel):
-    total_contributions: int
-    total_amount: Numeric
-    total_paid: Numeric
-    total_unpaid: Numeric
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
 
 class ContributionWithRelationsSchema(ContributionResponseSchema):
     birthday: Optional["BirthdayResponseSchema"] = None
@@ -68,8 +40,8 @@ class ContributionWithRelationsSchema(ContributionResponseSchema):
 
     model_config = ConfigDict(from_attributes=True)
 
-
 class ContributionWithContributorSchema(ContributionResponseSchema):
     contributor: "UserPublicSchema"
 
     model_config = ConfigDict(from_attributes=True)
+

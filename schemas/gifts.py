@@ -1,24 +1,25 @@
-from pydantic import BaseModel, Field, HttpUrl
-from typing import Optional, TYPE_CHECKING
+from pydantic import BaseModel, Field
+from typing import Optional
 from datetime import datetime
 from uuid import UUID
 
-if TYPE_CHECKING:
-    from schemas.users import UserPublicSchema
 
 class GiftBaseSchema(BaseModel):
-    name: Optional[str] = Field(None, max_length=255)
+    name: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = Field(None, max_length=255)
     link: Optional[str] = Field(None, max_length=255)
 
     model_config = {"from_attributes": True}
-
 class GiftCreateSchema(GiftBaseSchema):
     # user_id should be set from authenticated user, not from request body
     pass
 
 class GiftUpdateSchema(BaseModel):
-    pass
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=255)
+    link: Optional[str] = Field(None, max_length=255)
+
+    model_config = {"from_attributes": True}
 
 class GiftResponseSchema(GiftBaseSchema):
     id: UUID
@@ -26,13 +27,7 @@ class GiftResponseSchema(GiftBaseSchema):
     created_at: datetime
     updated_at: Optional[datetime]
 
-    model_config = {
-        "from_attributes": True
-    }
-
 class GiftWithUserSchema(GiftResponseSchema):
     user: "UserPublicSchema"
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = { "from_attributes": True}
