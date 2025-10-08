@@ -1,8 +1,8 @@
-from psycopg2._psycopg import Decimal
 from pydantic import BaseModel, Field, field_validator, root_validator, model_validator
 from typing import Optional, List, TYPE_CHECKING
 from datetime import datetime, date
 from uuid import UUID
+from sqlalchemy import Numeric
 
 if TYPE_CHECKING:
     from schemas.contributions import ContributionWithContributorSchema
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 class BirthdayBaseSchema(BaseModel):
     date_year: date
     gift_description: Optional[str] = Field(..., min_length=1, max_length=5000)
-    total_amount: Optional[Decimal] = None
+    total_amount: Optional[Numeric] = None
 
     @field_validator('date_year')
     @classmethod
@@ -27,7 +27,7 @@ class BirthdayCreateSchema(BirthdayBaseSchema):
 class BirthdayUpdate(BaseModel):
     date_year: Optional[date] = None
     gift_description: Optional[str] = Field(None, min_length=1, max_length=5000)
-    total_amount: Optional[Decimal] = None
+    total_amount: Optional[Numeric] = None
 
     model_config = {"from_attributes": True}
 
@@ -66,7 +66,7 @@ class BirthdayWithDetailsSchema(BirthdayResponseSchema):
 
 class BirthdayWithContributionsSchema(BirthdayWithDetailsSchema):
     contributions: List["ContributionWithContributorSchema"] = []
-    total_amount: Optional[Decimal] = None
+    total_amount: Optional[Numeric] = None
 
     model_config = {
         "from_attributes": True

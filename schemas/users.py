@@ -5,8 +5,8 @@ from uuid import UUID
 
 class UserBaseSchema(BaseModel):
     email: EmailStr
-    first_name: str = Field(..., min_length=1, max_length=100)
-    last_name: str = Field(..., min_length=1, max_length=100)
+    first_name: str
+    last_name: str
     nickname: Optional[str] = Field(None, max_length=50)
     birthday: Optional[datetime] = None
     role: str = Field(default="user")

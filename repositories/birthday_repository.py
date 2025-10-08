@@ -44,6 +44,22 @@ class BirthdayRepository(BaseRepository[Birthday]):
             )
         ).first()
 
+    def get_by_user_and_year(
+            self,
+            user_id: UUID,
+            year: int
+    ) -> Optional[Birthday]:
+
+        #Get birthday for a specific user and year.
+
+        return self.db.query(Birthday).filter(
+            Birthday.user_id == user_id,
+            Birthday.date_year.between(
+                date(year, 1, 1),
+                date(year, 12, 31)
+            )
+        ).first()
+
     def get_organized_by_user(self, organizer_id: UUID) -> list[type[Birthday]]:
         # All birthdays organized by a specific person.
         return self.db.query(Birthday).filter(

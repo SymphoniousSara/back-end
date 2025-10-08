@@ -48,5 +48,28 @@ class UserService:
 
         return user
 
-    def get_or_create_user(self, email: str) -> User:
-        pass
+    def get_user_by_id(self, user_id: UUID) -> User:
+        user = self.repository.get_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        return user
+
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        return self.repository.get_by_email(email)
+
+    def update_profile(self, user_id: UUID, update_data: UserUpdateSchema) -> User:
+        update_dict = update_data.model_dump(exclude_unset=True)
+        user = self.repository.update(user_id, **update_dict)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+
+        return user
+
+    def get_all_users(self) -> List[User]:
+        return self.repository.get_all()

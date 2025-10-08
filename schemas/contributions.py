@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 from typing import Optional, TYPE_CHECKING
 from datetime import datetime
 from uuid import UUID
-from decimal import Decimal
+from sqlalchemy import Numeric
 
 from schemas.users import UserPublicSchema
 
@@ -11,7 +11,8 @@ if TYPE_CHECKING:
     from schemas.users import UserResponseSchema
 
 class ContributionBaseSchema(BaseModel):
-    amount: Optional[Decimal] = Field(..., gt=0, max_digits=12, decimal_places=2)
+    amount: Optional[Numeric] = Field(..., gt=0, max_digits=12, decimal_places=2)
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @field_validator('amount')
     @classmethod
@@ -25,7 +26,7 @@ class ContributionCreateSchema(ContributionBaseSchema):
     birthday_id: UUID
 
 class ContributionUpdateSchema(BaseModel):
-    amount: Optional[Decimal] = Field(None, gt=0, max_digits=12, decimal_places=2)
+    amount: Optional[Numeric] = Field(None, gt=0, max_digits=12, decimal_places=2)
     paid: Optional[bool] = None
 
     model_config = {"from_attributes": True}
@@ -50,9 +51,11 @@ class ContributionResponseSchema(ContributionBaseSchema):
 
 class ContributionSummary(BaseModel):
     total_contributions: int
-    total_amount: Decimal
-    total_paid: Decimal
-    total_unpaid: Decimal
+    total_amount: Numeric
+    total_paid: Numeric
+    total_unpaid: Numeric
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 class ContributionWithRelationsSchema(ContributionResponseSchema):
     birthday: Optional["BirthdayResponseSchema"] = None
