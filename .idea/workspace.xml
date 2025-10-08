@@ -5,41 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="786d9bbf-cbd8-4c37-b9de-ddba6fe35eb5" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/factories.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routers/birthdays.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routers/contributions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/routers/gifts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/dotenv/cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/env/lib/python3.9/site-packages/dotenv/cli.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/dotenv/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/env/lib/python3.9/site-packages/dotenv/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/dotenv/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/env/lib/python3.9/site-packages/dotenv/version.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic-2.11.9.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic-2.11.9.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic-2.11.9.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic-2.11.9.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic-2.11.9.dist-info/licenses/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic/v1/mypy.py" beforeDir="false" afterPath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic/v1/mypy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic/version.py" beforeDir="false" afterPath="$PROJECT_DIR$/env/lib/python3.9/site-packages/pydantic/version.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/INSTALLER" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/LICENSE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/METADATA" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/RECORD" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/REQUESTED" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/WHEEL" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/entry_points.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/env/lib/python3.9/site-packages/python_dotenv-1.0.0.dist-info/top_level.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models/birthdays.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/birthdays.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/repositories/birthday_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/repositories/birthday_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/contributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/contributions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/gifts.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/gifts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routers/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/routers/users.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/schemas/birthdays.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/birthdays.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/schemas/contributions.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/contributions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/schemas/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/schemas/users.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/birthday_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/birthday_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/contribution_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/contribution_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/user_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/user_service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

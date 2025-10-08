@@ -3,8 +3,9 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from routers import auth, users, birthdays, contributions, gifts
 from starlette.config import Config
-from db.database import SessionLocal
+from db.database import SessionLocal, Base, engine
 from factories import TestDataSeeder
+from sqlalchemy.orm import Session
 
 app = FastAPI(
     title="Symphony Birthday Planner",
@@ -31,16 +32,27 @@ app.add_middleware(
     secret_key=config("SECRET_KEY"),
 )
 
-@app.on_event("startup")
-def seed_data():
-    db = SessionLocal()
-    from sqlalchemy import text
-    # Optional check: only seed if empty
-    user_count = db.execute(text("SELECT COUNT(*) FROM users")).scalar()
-    if user_count == 0:
-        print("🌱 Seeding test data...")
-        TestDataSeeder.seed_complete_scenario(db)
-    db.close()
+# Create tables
+Base.metadata.create_all(bind=engine)
+
+# Seed database
+def seed_db():
+    db: Session = SessionLocal()
+    try:
+        # Check if users exist to avoid duplicate seeding
+        from models.users import User
+        user_count = db.query(User).count()
+        if user_count == 0:
+            print("🌱 Seeding database with test data...")
+            TestDataSeeder.seed_complete_scenario(db)
+            print("✅ Database seeded!")
+        else:
+            print("ℹ️ Database already has data. Skipping seed.")
+    finally:
+        db.close()
+
+# Call seeding function
+seed_db()
 
 app.include_router(auth.router, prefix='/auth')
 app.include_router(users.router)
