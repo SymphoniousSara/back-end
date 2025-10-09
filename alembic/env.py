@@ -1,11 +1,8 @@
-import os
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config, pool
 from alembic import context
 
 # Import Base (your models' metadata)
-
 from db.database import Base
 from models import users,birthdays,contributions,gifts
 from core.config import settings  # loads env vars from .env

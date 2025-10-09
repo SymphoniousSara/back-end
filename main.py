@@ -1,8 +1,10 @@
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-from routers import auth
+from routers import auth, users, birthdays, contributions, gifts
 from starlette.config import Config
+from db.database import SessionLocal, Base, engine
+from sqlalchemy.orm import Session
 
 app = FastAPI(
     title="Symphony Birthday Planner",
@@ -30,6 +32,10 @@ app.add_middleware(
 )
 
 app.include_router(auth.router, prefix='/auth')
+app.include_router(users.router)
+app.include_router(birthdays.router)
+app.include_router(contributions.router)
+app.include_router(gifts.router)
 
 # This allows to serve the fastAPI application, uvicorn is a web-server
 if __name__ == '__main__':

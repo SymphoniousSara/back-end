@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime
+from sqlalchemy import Column, String, DateTime, Date
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID, JSONB
@@ -13,7 +13,7 @@ class User(Base):
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     nickname = Column(String, nullable=True)
-    birthday = Column(DateTime, nullable=True)
+    birth_date = Column(Date, nullable=True)
     role = Column(String, default="user") # keeping an option for admin role
     bank_details = Column(JSONB, nullable=True)  # should be encrypted by app or DB extension
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -21,7 +21,7 @@ class User(Base):
 
 
     # Relationships
-    gifts = relationship("Gift", back_populates="users", cascade="all, delete-orphan")
-    birthdays = relationship("Birthday", back_populates="user", cascade="all, delete-orphan", foreign_keys="Birthday.user_id")
-    organized_birthdays = relationship("Birthday", back_populates="organizer", cascade="all, delete-orphan", foreign_keys="Birthday.organizer_id")
-    contributions = relationship("Contribution", back_populates="contributions", cascade="all, delete-orphan")
+    gifts = relationship("Gift", back_populates="user")  # User's wishlist
+    birthdays_as_celebrant = relationship("Birthday", back_populates="celebrant", foreign_keys="Birthday.celebrant_id")
+    birthdays_as_organizer = relationship("Birthday", back_populates="organizer", foreign_keys="Birthday.organizer_id")
+    contributions = relationship("Contribution", back_populates="contributor")

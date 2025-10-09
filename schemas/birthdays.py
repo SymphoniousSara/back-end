@@ -1,73 +1,66 @@
-from psycopg2._psycopg import Decimal
-from pydantic import BaseModel, Field, field_validator, root_validator, model_validator
-from typing import Optional, List, TYPE_CHECKING
+from __future__ import annotations
 from datetime import datetime, date
+from typing import Optional, List, TYPE_CHECKING
 from uuid import UUID
+from pydantic import BaseModel, Field, field_validator, ConfigDict
 
 if TYPE_CHECKING:
-    from schemas.contributions import ContributionWithContributorSchema
     from schemas.users import UserPublicSchema
+    from schemas.contributions import ContributionWithContributorSchema
+    from schemas.gifts import GiftResponseSchema
 
 class BirthdayBaseSchema(BaseModel):
-    date_year: date
+    celebration_date: date
     gift_description: Optional[str] = Field(..., min_length=1, max_length=5000)
-    total_amount: Optional[Decimal] = None
-
-    @field_validator('date_year')
-    @classmethod
-    def validate_date_year(cls, value):
-        if value < date.today():
-            raise ValueError('Birthday date cannot be in the past')
-        return value
-
-class BirthdayCreateSchema(BirthdayBaseSchema):
-    user_id: UUID
-    # initially no organizer_id needed
-
-class BirthdayUpdate(BaseModel):
-    date_year: Optional[date] = None
-    gift_description: Optional[str] = Field(None, min_length=1, max_length=5000)
-    total_amount: Optional[Decimal] = None
+    total_amount: Optional[int] = None
 
     model_config = {"from_attributes": True}
 
-    @field_validator('date_year')
+    @field_validator("celebration_date")
     @classmethod
-    def validate_date_year(cls, value):
-        if value is not None and value < date.today():
-            raise ValueError('Birthday date cannot be in the past')
+    def validate_celebration_date(cls, value):
+        if value < date.today():
+            raise ValueError("Birthday date cannot be in the past")
         return value
 
-    @model_validator(mode="after")
-    def check_user_not_organizer(self):
-        if self.user_id == self.organizer_id:
-            raise ValueError("User cannot organize their own birthday")
-        return self
+class BirthdayCreateSchema(BirthdayBaseSchema):
+    celebrant_id: UUID
+    # initially no organizer_id needed
+
+class BirthdayUpdateSchema(BaseModel):
+    celebration_date: Optional[date] = None
+    gift_description: Optional[str] = Field(None, min_length=1, max_length=5000)
+    total_amount: Optional[int] = None
+    organizer_id: Optional[UUID] = None
+
+    model_config = {"from_attributes": True}
+
+    @field_validator("celebration_date")
+    @classmethod
+    def validate_celebration_date(cls, value):
+        if value is not None and value < date.today():
+            raise ValueError("Birthday date cannot be in the past")
+        return value
 
 class BirthdayResponseSchema(BirthdayBaseSchema):
     id: UUID
-    user_id: UUID
-    organizer_id: UUID
-    bank_details: Optional[dict] = None
+    celebrant_id: UUID
+    organizer_id: Optional[UUID] = None
     created_at: datetime
     updated_at: Optional[datetime]
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = ConfigDict(from_attributes=True)
 
 class BirthdayWithDetailsSchema(BirthdayResponseSchema):
-    user: "UserPublicSchema"
-    organizer: "UserPublicSchema"
+    celebrant: "UserPublicSchema"  # Celebrant info
+    organizer: Optional["UserPublicSchema"] = None # Organizer info
+    celebrant_gifts: List["GiftResponseSchema"] = []  # Celebrant's wishlist
 
-    model_config = {
-        "from_attributes": True
-    }
 
 class BirthdayWithContributionsSchema(BirthdayWithDetailsSchema):
     contributions: List["ContributionWithContributorSchema"] = []
-    total_amount: Optional[Decimal] = None
+    total_amount: Optional[int] = None
 
-    model_config = {
-        "from_attributes": True
-    }
+    model_config = ConfigDict(from_attributes=True)
+
+

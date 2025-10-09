@@ -27,7 +27,7 @@ class GiftService:
         )
         return gift
 
-    def get_user_wishlist(self, user_id: UUID) -> list[type[Gift]]:
+    def get_user_wishlist(self, user_id: UUID) -> List[Gift]:
         return self.repository.get_by_user_id(user_id)
 
     def get_gift_by_id(
@@ -82,5 +82,12 @@ class GiftService:
 
         return success
 
-    def get_public_wishlist(self, user_id: UUID) -> list[type[Gift]]:
+    def get_public_wishlist(self, user_id: UUID) -> List[Gift]:
         return self.repository.get_by_user_id(user_id)
+
+    def gift_belongs_to_user(self, gift_id: UUID, user_id: UUID) -> bool:
+        # Authorization for edit
+        return self.repository.gift_belongs_to_user(gift_id, user_id)
+
+    def count_user_gifts(self, user_id: UUID) -> int:
+        return self.repository.count_user_gifts(user_id)

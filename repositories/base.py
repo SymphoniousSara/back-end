@@ -1,4 +1,4 @@
-from typing import Generic, TypeVar, Type, Optional, List
+from typing import Generic, TypeVar, Type, Optional, List, Dict, Any
 from uuid import UUID
 from sqlalchemy.orm import Session
 from db.database import Base
@@ -29,9 +29,11 @@ class BaseRepository(Generic[ModelType]):
         if not db_obj:
             return None
 
-        for field, value in kwargs.items():
-            if value is not None and hasattr(db_obj, field):
-                setattr(db_obj, field, value)
+        update_data = {k: v for k, v in kwargs.items()
+                       if v is not None and hasattr(db_obj, k)}
+
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
 
         self.db.commit()
         self.db.refresh(db_obj)
@@ -47,9 +49,26 @@ class BaseRepository(Generic[ModelType]):
         return True
 
     def exists(self, id: UUID) -> bool:
-        return self.db.query(
-            self.db.query(self.model).filter(self.model.id == id).exists()
-        ).scalar()
+        return self.db.query(self.model).filter(self.model.id == id).first() is not None
 
     def count(self) -> int:
         return self.db.query(self.model).count()
+
+    def get_by_field(self, field: str, value: Any) -> Optional[ModelType]:
+        if not hasattr(self.model, field):
+            return None
+        return self.db.query(self.model).filter(getattr(self.model, field) == value).first()
+
+    def get_all_by_field(self, field: str, value: Any) -> List[ModelType]:
+        # Example: Get All gifts for a user, get all contributions for a birthday
+        if not hasattr(self.model, field):
+            return []
+        return self.db.query(self.model).filter(getattr(self.model, field) == value).all()
+
+    def bulk_create(self, objects: List[Dict[str, Any]]) -> List[ModelType]:
+        db_objs = [self.model(**obj_data) for obj_data in objects]
+        self.db.add_all(db_objs)
+        self.db.commit()
+        for obj in db_objs:
+            self.db.refresh(obj)
+        return db_objs
