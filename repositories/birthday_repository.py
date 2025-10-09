@@ -5,17 +5,18 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import Session, joinedload
 
 from models.birthdays import Birthday
+from models.contributions import Contribution
 from repositories.base import BaseRepository
 
 class BirthdayRepository(BaseRepository[Birthday]):
     def __init__(self, db: Session):
-        super().__init__(Birthday, db)  # ✅ Fixed super() call
+        super().__init__(Birthday, db)
 
     def get_upcoming_birthdays(
             self,
             months_ahead: int = 2,
             include_relations: bool = True
-    ) -> List[Birthday]:  # ✅ Fixed type
+    ) -> List[Birthday]:
         today = date.today()
         end_date = today + relativedelta(months=months_ahead)
 
@@ -65,7 +66,7 @@ class BirthdayRepository(BaseRepository[Birthday]):
         ).options(
             joinedload(Birthday.celebrant),
             joinedload(Birthday.organizer),
-            joinedload(Birthday.contributions).joinedload('contributor')
+            joinedload(Birthday.contributions).joinedload(Contribution.contributor)
         ).first()
 
     def get_birthdays_without_organizer(self) -> List[Birthday]:

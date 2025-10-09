@@ -25,7 +25,6 @@ class UserRepository(BaseRepository[User]):
 
     #Restriction for personal birthday
     def get_all_except(self, user_id: UUID) -> List[User]:
-        # ⚠️ FIXED: Return type should be List[User], not list[type[User]]
         return self.db.query(User).filter(
             User.id != user_id
         ).all()

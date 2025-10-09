@@ -17,58 +17,8 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-async def get_current_user_id(
-        x_user_id: Optional[str] = Header(None),
-        db: Session = Depends(get_db)
-) -> UUID:
-    """
-    Mock authentication dependency.
-
-    Until OAuth is implemented, this accepts a user ID via header.
-    In production, this will validate OAuth tokens and extract user info.
-
-    Usage in testing/development:
-        Send header: X-User-Id: <uuid>
-
-    Args:
-        x_user_id: User ID from header
-        db: Database session
-
-    Returns:
-        User UUID
-
-    Raises:
-        HTTPException: If authentication fails
-    """
-    if not settings.MOCK_AUTH_ENABLED:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail="OAuth authentication not yet implemented"
-        )
-
-    if not x_user_id:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Missing X-User-Id header (mock auth mode)",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    try:
-        user_id = UUID(x_user_id)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Invalid user ID format"
-        )
-
-    # Verify user exists
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
-        )
-
+async def get_current_user_id():
+    user_id = UUID("e6124687-61f1-4c74-a858-2244379c898f")
     return user_id
 
 

@@ -1,185 +1,99 @@
-# factories.py (updated)
-import uuid
-from datetime import datetime, date, timedelta
-from typing import Optional, Dict, Any, List
 from sqlalchemy.orm import Session
-
+from db.database import SessionLocal
 from models.users import User
+from models.contributions import Contribution
 from models.birthdays import Birthday
 from models.gifts import Gift
-from models.contributions import Contribution
+from datetime import date, timedelta
+import uuid
 
+def seed_data(db: Session):
+    """Seeds the database with example data if empty."""
+    if db.query(User).first():
+        print("Database already seeded. Skipping...")
+        return
 
-class UserFactory:
-    """Factory for creating test users."""
+    print("Seeding database with sample data...")
 
-    @staticmethod
-    def create(
-            db: Session,
-            email: Optional[str] = None,
-            first_name: Optional[str] = None,
-            last_name: Optional[str] = None,
-            nickname: Optional[str] = None,
-            birth_date: Optional[date] = None,
-            role: str = "user",
-            **kwargs
-    ) -> User:
-        """Create a test user."""
-        if not email:
-            random_id = str(uuid.uuid4())[:8]
-            email = f"test.user{random_id}@symphony.is"
+    # --- USERS ---
+    user_celebrant = User(
+        id=uuid.uuid4(),
+        email="celebrant@example.com",
+        first_name="Alice",
+        last_name="Johnson",
+        nickname="Ali",
+        birth_date=date(1999, 5, 20),
+        role="user",
+        bank_details={"iban": "MK072000123456789", "bank": "NLB Banka"}
+    )
 
-        if not first_name:
-            first_name = "Test"
+    user_organizer = User(
+        id=uuid.uuid4(),
+        email="organizer@example.com",
+        first_name="Bob",
+        last_name="Peterson",
+        nickname="Bobby",
+        birth_date=date(1997, 9, 15),
+        role="user",
+        bank_details={"iban": "MK072000987654321", "bank": "Halk Bank"}
+    )
 
-        if not last_name:
-            last_name = "User"
+    db.add_all([user_celebrant, user_organizer])
+    db.commit()
 
-        user = User(
-            id=uuid.uuid4(),
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            nickname=nickname,
-            birth_date=birth_date,
-            role=role,
-            **kwargs
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
-        return user
+    # --- BIRTHDAY ---
+    birthday = Birthday(
+        id=uuid.uuid4(),
+        celebrant_id=user_celebrant.id,
+        organizer_id=user_organizer.id,
+        celebration_date=date.today() + timedelta(days=30),
+        gift_description="Surprise party and a smartwatch",
+        total_amount=5000
+    )
+    db.add(birthday)
+    db.commit()
 
-    @staticmethod
-    def create_batch(db: Session, count: int = 5) -> List[User]:
-        """Create multiple test users."""
-        users = []
-        for i in range(count):
-            user = UserFactory.create(
-                db,
-                email=f"user{i}@symphony.is",
-                first_name=f"User{i}",
-                last_name=f"Test{i}",
-                birth_date=date(1990 + i, (i % 12) + 1, (i % 28) + 1)
-            )
-            users.append(user)
-        return users
+    # --- CONTRIBUTIONS ---
+    contribution_1 = Contribution(
+        id=uuid.uuid4(),
+        birthday_id=birthday.id,
+        contributor_id=user_organizer.id,
+        amount=2000,
+        paid=True,
+    )
 
+    db.add(contribution_1)
+    db.commit()
 
-class GiftFactory:
-    """Factory for creating test gifts."""
+    # --- GIFTS ---
+    gift_1 = Gift(
+        id=uuid.uuid4(),
+        user_id=user_celebrant.id,
+        name="Apple Watch SE",
+        description="Smartwatch with fitness tracking",
+        link="https://apple.com/apple-watch-se"
+    )
 
-    @staticmethod
-    def create(
-            db: Session,
-            user_id: uuid.UUID,
-            name: Optional[str] = None,
-            description: Optional[str] = None,
-            link: Optional[str] = None,
-            **kwargs
-    ) -> Gift:
-        """Create a test gift."""
-        if not name:
-            name = f"Test Gift {str(uuid.uuid4())[:8]}"
+    gift_2 = Gift(
+        id=uuid.uuid4(),
+        user_id=user_celebrant.id,
+        name="Kindle Paperwhite",
+        description="E-reader for book lovers",
+        link="https://amazon.com/kindle-paperwhite"
+    )
 
-        if not description:
-            description = "A wonderful gift idea"
+    db.add_all([gift_1, gift_2])
+    db.commit()
 
-        gift = Gift(
-            id=uuid.uuid4(),
-            user_id=user_id,
-            name=name,
-            description=description,
-            link=link,
-            **kwargs
-        )
-        db.add(gift)
-        db.commit()
-        db.refresh(gift)
-        return gift
+    print("Database seeded successfully with sample data.")
 
-    @staticmethod
-    def create_wishlist(
-            db: Session,
-            user_id: uuid.UUID,
-            count: int = 3
-    ) -> list[Gift]:
-        """Create multiple gifts for a user's wishlist."""
-        gifts = []
-        for i in range(count):
-            gift = GiftFactory.create(
-                db,
-                user_id=user_id,
-                name=f"Gift Idea {i + 1}",
-                description=f"Description for gift {i + 1}",
-                link=f"https://example.com/gift{i + 1}"
-            )
-            gifts.append(gift)
-        return gifts
+def run_seed():
+    """Utility to manually run seeding if needed."""
+    db = SessionLocal()
+    try:
+        seed_data(db)
+    finally:
+        db.close()
 
-class BirthdayFactory:
-    """Factory for creating test birthdays."""
-
-    @staticmethod
-    def create(
-            db: Session,
-            celebrant_id: uuid.UUID,
-            organizer_id: Optional[uuid.UUID] = None,
-            celebration_date: Optional[date] = None,
-            gift_description: Optional[str] = None,
-            total_amount: Optional[int] = None,
-            **kwargs
-    ) -> Birthday:
-        """Create a test birthday."""
-        if not celebration_date:
-            celebration_date = date.today() + timedelta(days=30)
-
-        if not gift_description:
-            gift_description = "A special gift for a special person"
-
-        if not total_amount:
-            total_amount = 3000
-
-        birthday = Birthday(
-            id=uuid.uuid4(),
-            celebrant_id=celebrant_id,
-            organizer_id=organizer_id,
-            celebration_date=celebration_date,
-            gift_description=gift_description,
-            total_amount=total_amount,
-            **kwargs
-        )
-        db.add(birthday)
-        db.commit()
-        db.refresh(birthday)
-        return birthday
-
-
-class ContributionFactory:
-    """Factory for creating test contributions."""
-
-    @staticmethod
-    def create(
-            db: Session,
-            birthday_id: uuid.UUID,
-            contributor_id: uuid.UUID,
-            amount: Optional[int] = None,
-            paid: bool = False,
-            **kwargs
-    ) -> Contribution:
-        """Create a test contribution."""
-        if not amount:
-            amount = 300
-
-        contribution = Contribution(
-            id=uuid.uuid4(),
-            birthday_id=birthday_id,
-            contributor_id=contributor_id,
-            amount=amount,
-            paid=paid,
-            **kwargs
-        )
-        db.add(contribution)
-        db.commit()
-        db.refresh(contribution)
-        return contribution
+if __name__ == "__main__":
+    run_seed()

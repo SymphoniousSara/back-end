@@ -5,7 +5,7 @@ from routers import auth, users, birthdays, contributions, gifts
 from starlette.config import Config
 from db.database import SessionLocal, Base, engine
 from sqlalchemy.orm import Session
-
+from factories import seed_data
 app = FastAPI(
     title="Symphony Birthday Planner",
     description="Internal symphony.is application for managing birthdays",
@@ -36,6 +36,13 @@ app.include_router(users.router)
 app.include_router(birthdays.router)
 app.include_router(contributions.router)
 app.include_router(gifts.router)
+
+@app.on_event("startup")
+def on_startup():
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    seed_data(db)
+    db.close()
 
 # This allows to serve the fastAPI application, uvicorn is a web-server
 if __name__ == '__main__':

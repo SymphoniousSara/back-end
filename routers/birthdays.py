@@ -29,9 +29,14 @@ def list_upcoming_birthdays(
     - Gift details
     - Basic celebration info
     """
-    service = BirthdayService(db)
-    birthdays = service.get_upcoming_birthdays(current_user_id, months_ahead)
-    return birthdays
+    try:
+        service = BirthdayService(db)
+        birthdays = service.get_upcoming_birthdays(current_user_id, months_ahead)
+        return birthdays
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise e
 
 
 @router.get("/{birthday_id}", response_model=BirthdayWithContributionsSchema)
