@@ -1,15 +1,13 @@
+from __future__ import annotations
 from datetime import datetime, date
 from typing import Optional, List, TYPE_CHECKING
 from uuid import UUID
-
 from pydantic import BaseModel, Field, field_validator, ConfigDict
-from sqlalchemy import Numeric
 
 if TYPE_CHECKING:
-    from schemas.contributions import ContributionWithContributorSchema
     from schemas.users import UserPublicSchema
+    from schemas.contributions import ContributionWithContributorSchema
     from schemas.gifts import GiftResponseSchema
-
 
 class BirthdayBaseSchema(BaseModel):
     celebration_date: date
@@ -61,6 +59,8 @@ class BirthdayWithDetailsSchema(BirthdayResponseSchema):
 
 class BirthdayWithContributionsSchema(BirthdayWithDetailsSchema):
     contributions: List["ContributionWithContributorSchema"] = []
-    total_amount: Optional[Numeric] = None
+    total_amount: Optional[int] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+

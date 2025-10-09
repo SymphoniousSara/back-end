@@ -18,8 +18,8 @@ class Birthday(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
 
     __table_args__ = (
-        CheckConstraint("user_id <> organizer_id", name="ck_user_not_organizer"),
-        UniqueConstraint("user_id", "date_year", name="uq_user_birthday_year")
+        CheckConstraint("celebrant_id <> organizer_id", name="ck_celebrant_not_organizer"),
+        UniqueConstraint("celebrant_id", "celebration_date", name="uq_celebrant_birthday_date")
     )
 
     # Relationships
