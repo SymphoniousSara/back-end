@@ -23,15 +23,11 @@ def list_upcoming_birthdays(
         db: Session = Depends(get_db)
 ):
     """
-    List upcoming birthdays in the next X months.
-
     Returns birthdays with:
     - Celebrant info
     - Organizer info
     - Gift details
     - Basic celebration info
-
-    **Note:** Does not include contributions list for performance
     """
     service = BirthdayService(db)
     birthdays = service.get_upcoming_birthdays(current_user_id, months_ahead)
@@ -45,12 +41,10 @@ def get_birthday_details(
         db: Session = Depends(get_db)
 ):
     """
-    Get detailed birthday information.
-
-    **Visibility depends on role:**
-    - **Everyone:** See basic info, gift idea, organizer
-    - **Contributor:** See above + their own contribution details
-    - **Organizer:** See everything + all contributions
+    Visibility depends on role:
+    - Everyone: See basic info, gift idea, organizer
+    - Contributor: See above + their own contribution details
+    - Organizer: See everything + all contributions
     """
     service = BirthdayService(db)
     birthday = service.get_birthday_details(birthday_id, current_user_id)
@@ -67,13 +61,13 @@ def become_organizer(
     """
     Become organizer for a birthday and set initial details.
 
-    **One-time action:**
+    One-time action:
     - Assigns current user as organizer
     - Sets gift description
     - Sets total amount
     - Cannot organize your own birthday
 
-    **Note:** Once organized, cannot be changed to another organizer
+    Current logic does not involve another organizer.
     """
     service = BirthdayService(db)
     birthday = service.become_organizer(
@@ -92,14 +86,12 @@ def update_birthday(
         db: Session = Depends(get_db)
 ):
     """
-    Update birthday details.
-
-    **Organizer only:** Can update:
+    Organizer only - can update:
     - Gift description
     - Total amount
     - Celebration date
 
-    **Cannot change:** celebrant, organizer
+    Cannot change: celebrant, organizer
     """
     service = BirthdayService(db)
     birthday = service.update_birthday(birthday_id, current_user_id, update_data)
@@ -114,13 +106,12 @@ def calculate_contribution_split(
 ):
     """
     Calculate equal split of total amount among contributors.
-
-    **Organizer only**
+    Organizer only
 
     Divides total amount equally among all current contributors
     and updates their contribution amounts.
 
-    **Example:** 3000 MKD / 3 contributors = 1000 MKD each
+    Example: 3000 MKD / 3 contributors = 1000 MKD each
     """
     service = BirthdayService(db)
     birthday = service.calculate_contribution_amounts(birthday_id, current_user_id)
@@ -133,15 +124,14 @@ def generate_birthday_entries(
 ):
     """
     Auto-generate birthday entries for next 2 months.
-
-    **System/Cron job endpoint**
+    System/Cron job endpoint
 
     Creates birthday entries for all users with birthdays
     in the next 2 months. Should be called:
     - Monthly by cron job
     - Or manually when needed
 
-    **Note:** Only creates entries that don't exist yet.
+    Note: Only creates entries that don't exist yet.
     """
     service = BirthdayService(db)
     birthdays = service.create_birthday_entries()
@@ -158,9 +148,7 @@ def get_my_organized_birthdays(
 ):
     """
     Get all birthdays organized by current user.
-
     Shows full details including all contributions and payment status.
-    Useful for organizers to manage their responsibilities.
     """
     service = BirthdayService(db)
     birthdays = service.get_birthdays_organized_by_user(current_user_id)

@@ -15,7 +15,7 @@ class UserService:
         self.repository = UserRepository(db)
 
     def get_or_create_user_from_email(self, email: str) -> User:
-        """OAuth flow: Get existing user or create new one"""
+        # OAuth flow: Get existing user or create new one - open to fixes?
         email = email.lower().strip()
 
         # Check if user already exists
